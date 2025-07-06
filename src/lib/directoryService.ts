@@ -35,7 +35,8 @@ export const getDirectorySchools = async (filters?: DirectoryFilters): Promise<D
     }
 
     // Try to fetch manual schools (may fail if tables don't exist yet)
-    let manualSchools: DirectoryManualSchool[] = []
+    let manualSchoolsData: DirectoryManualSchool[] = []
+    let manualResult: any = null
     try {
       let manualQuery = supabase
         .from('directory_manual_schools')
@@ -46,12 +47,12 @@ export const getDirectorySchools = async (filters?: DirectoryFilters): Promise<D
         manualQuery = manualQuery.ilike('school_name', `%${filters.search}%`)
       }
 
-      const manualResult = await manualQuery
+      manualResult = await manualQuery
       
       if (manualResult.error) {
         console.warn('Directory tables not yet created, showing only DSVI schools:', manualResult.error.message)
       } else {
-        manualSchools = manualResult.data || []
+        manualSchoolsData = manualResult.data || []
       }
     } catch (error) {
       console.warn('Directory tables not yet created, showing only DSVI schools:', error)
@@ -75,7 +76,7 @@ export const getDirectorySchools = async (filters?: DirectoryFilters): Promise<D
     }))
 
     // Map manual schools to unified format
-    const manualSchools: DirectorySchool[] = (manualResult.data || []).map((school: DirectoryManualSchool) => ({
+    const mappedManualSchools: DirectorySchool[] = manualSchoolsData.map((school: DirectoryManualSchool) => ({
       id: school.id,
       name: school.school_name,
       logo_url: school.logo_url,
@@ -92,7 +93,7 @@ export const getDirectorySchools = async (filters?: DirectoryFilters): Promise<D
     }))
 
     // Combine and filter
-    let allSchools = [...dsviSchools, ...manualSchools]
+    let allSchools = [...dsviSchools, ...mappedManualSchools]
 
     // Apply additional filters
     if (filters?.school_type && filters.school_type !== 'all') {
