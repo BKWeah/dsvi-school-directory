@@ -22,25 +22,40 @@ export const getDirectorySchools = async (filters?: DirectoryFilters): Promise<D
         pages(sections)
       `)
 
-    // Fetch approved manual schools
-    let manualQuery = supabase
-      .from('directory_manual_schools')
-      .select('*')
-      .eq('status', 'approved')
-
-    // Apply filters
+    // Apply filters to DSVI query
     if (filters?.search) {
       dsviQuery = dsviQuery.ilike('name', `%${filters.search}%`)
-      manualQuery = manualQuery.ilike('school_name', `%${filters.search}%`)
     }
 
-    const [dsviResult, manualResult] = await Promise.all([
-      dsviQuery,
-      manualQuery
-    ])
+    const dsviResult = await dsviQuery
 
-    if (dsviResult.error) throw dsviResult.error
-    if (manualResult.error) throw manualResult.error
+    if (dsviResult.error) {
+      console.error('Error fetching DSVI schools:', dsviResult.error)
+      return []
+    }
+
+    // Try to fetch manual schools (may fail if tables don't exist yet)
+    let manualSchools: DirectoryManualSchool[] = []
+    try {
+      let manualQuery = supabase
+        .from('directory_manual_schools')
+        .select('*')
+        .eq('status', 'approved')
+
+      if (filters?.search) {
+        manualQuery = manualQuery.ilike('school_name', `%${filters.search}%`)
+      }
+
+      const manualResult = await manualQuery
+      
+      if (manualResult.error) {
+        console.warn('Directory tables not yet created, showing only DSVI schools:', manualResult.error.message)
+      } else {
+        manualSchools = manualResult.data || []
+      }
+    } catch (error) {
+      console.warn('Directory tables not yet created, showing only DSVI schools:', error)
+    }
 
     // Map DSVI schools to unified format
     const dsviSchools: DirectorySchool[] = (dsviResult.data || []).map((school: any) => ({
