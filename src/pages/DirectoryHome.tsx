@@ -5,6 +5,7 @@ import VisitorSignupModal from '../components/directory/VisitorSignupModal'
 import SchoolGrid from '../components/directory/SchoolGrid'
 import FilterSidebar from '../components/directory/FilterSidebar'
 import AdBanner from '../components/directory/AdBanner'
+import AdSlot from '../components/ads/AdSlot'
 import { getDirectorySchools } from '../lib/directoryService'
 import { generateSessionId } from '../lib/directoryService'
 import type { DirectorySchool, DirectoryFilters } from '../types/database'
@@ -164,8 +165,15 @@ const DirectoryHome: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Filters Sidebar */}
-              <div className="lg:w-1/4">
+              <div className="lg:w-1/4 space-y-6">
                 <FilterSidebar onFilterChange={handleFilterChange} />
+                
+                {/* Sidebar Ad Slot */}
+                <AdSlot 
+                  slotId="directory-sidebar"
+                  slotType="sidebar"
+                  maxAds={2}
+                />
               </div>
 
               {/* Schools Grid */}
@@ -176,13 +184,41 @@ const DirectoryHome: React.FC = () => {
                   </h2>
                 </div>
 
-                {/* Ad Banner */}
-                <AdBanner className="mb-8" />
+                {/* Banner Ad Slot */}
+                <AdSlot 
+                  slotId="directory-top-banner"
+                  slotType="banner"
+                  className="mb-8"
+                  maxAds={1}
+                />
 
                 {/* Schools Grid */}
                 <SchoolGrid schools={schools} loading={loading} />
+
+                {/* Spotlight Ad after every 6 schools */}
+                {schools.length > 6 && (
+                  <div className="my-8">
+                    <AdSlot 
+                      slotId="directory-mid-content"
+                      slotType="spotlight"
+                      maxAds={3}
+                      className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                    />
+                  </div>
+                )}
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Footer Ad Slot */}
+        <section className="py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AdSlot 
+              slotId="directory-footer-banner"
+              slotType="footer"
+              maxAds={1}
+            />
           </div>
         </section>
 
