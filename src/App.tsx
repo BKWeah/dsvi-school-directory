@@ -8,6 +8,8 @@ import SchoolProfile from './pages/SchoolProfile'
 import PromoBoost from './pages/PromoBoost'
 import DirectoryAdmin from './pages/DirectoryAdmin'
 import ManualSubmission from './pages/ManualSubmission'
+import CampaignDashboard from './components/promo/CampaignDashboard'
+import ComponentTest from './test/ComponentTest'
 
 const queryClient = new QueryClient()
 
@@ -22,7 +24,9 @@ function App() {
               <Route path="/school/:schoolId" element={<SchoolProfile />} />
               <Route path="/submit-school" element={<ManualSubmission />} />
               <Route path="/promo-boost" element={<PromoBoost />} />
+              <Route path="/campaigns" element={<CampaignDashboard />} />
               <Route path="/admin" element={<DirectoryAdmin />} />
+              <Route path="/test" element={<ComponentTest />} />
             </Routes>
             <Toaster position="top-right" />
           </div>
