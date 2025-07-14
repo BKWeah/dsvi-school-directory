@@ -139,112 +139,113 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       setLoading(true)
       
-      // Known DSVI admin emails (this would be replaced with database lookup)
-      const knownAdmins = [
-        { email: 'admin@dsvi.com', level: 1, name: 'DSVI Super Admin', password: 'admin123' },
-        { email: 'director@dsvi.com', level: 1, name: 'DSVI Director', password: 'director123' },
-        { email: 'manager@dsvi.com', level: 2, name: 'DSVI Manager', password: 'manager123' },
-        { email: 'content@dsvi.com', level: 3, name: 'Content Admin', password: 'content123' },
-        { email: 'support@dsvi.com', level: 4, name: 'Support Admin', password: 'support123' }
-      ]
-
-      // DEVELOPMENT MODE: Check for hardcoded credentials first
-      const isDevelopment = import.meta.env.DEV || !import.meta.env.VITE_SUPABASE_URL
-      const knownAdmin = knownAdmins.find(admin => admin.email === email)
+      console.log('Starting database-only authentication for:', email)
       
+      // Authenticate with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (authError) {
+        console.error('Supabase auth error:', authError)
+        return false
+      }
+
+      if (!authData.user) {
+        console.error('No user data returned from auth')
+        return false
+      }
+
+      console.log('Supabase auth successful, checking admin status...')
+      
+      // Check if user is a DSVI admin
+      const { data: adminData, error: adminError } = await supabase
+        .from('dsvi_admins')
+        .select('*')
+        .eq('user_id', authData.user.id)
+        .eq('is_active', true)
+        .maybeSingle()
+
+      console.log('DSVI admin check result:', { adminData, adminError })
+
       let adminUser: AdminUser | null = null
 
-      if (isDevelopment && knownAdmin && password === knownAdmin.password) {
-        // Development mode: Use hardcoded credentials
+      if (!adminError && adminData) {
+        // This is a DSVI admin
+        console.log('Found DSVI admin:', adminData.name)
+        
+        // Update last login
+        await supabase
+          .from('dsvi_admins')
+          .update({ last_login: new Date().toISOString() })
+          .eq('id', adminData.id)
+        
         adminUser = {
-          id: `dev_${knownAdmin.email}`,
-          email: email,
-          name: knownAdmin.name,
-          admin_level: knownAdmin.level,
-          permissions: getDefaultPermissions(knownAdmin.level),
+          id: authData.user.id,
+          email: adminData.email,
+          name: adminData.name,
+          admin_level: adminData.admin_level,
+          permissions: getDefaultPermissions(adminData.admin_level),
           last_login: new Date().toISOString(),
           isAuthenticated: true
         }
       } else {
-        // Production mode or non-hardcoded credentials: Authenticate with Supabase
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        })
+        // Not a DSVI admin, check if they're a school admin
+        console.log('Not a DSVI admin, checking school admin status...')
+        
+        const { data: schoolData, error: schoolError } = await supabase
+          .from('schools')
+          .select('id, name, admin_user_id')
+          .eq('admin_user_id', authData.user.id)
+          .maybeSingle()
 
-        if (authError) {
-          console.error('Auth error:', authError)
-          return false
-        }
+        console.log('School admin check result:', { schoolData, schoolError })
 
-        if (!authData.user) {
-          return false
-        }
-
-        if (knownAdmin) {
-          // Production mode: This is a known DSVI admin, authenticate via Supabase
+        if (!schoolError && schoolData) {
+          // This is a school admin
           adminUser = {
             id: authData.user.id,
             email: email,
-            name: knownAdmin.name,
-            admin_level: knownAdmin.level,
-            permissions: getDefaultPermissions(knownAdmin.level),
+            name: `${schoolData.name} Admin`,
+            admin_level: 99, // Special level for school admins
+            permissions: getDefaultPermissions(99),
+            school_id: schoolData.id,
             last_login: new Date().toISOString(),
             isAuthenticated: true
           }
         } else {
-          // Check if they're a school admin that should have directory access
-          const { data: schoolData, error: schoolError } = await supabase
-            .from('schools')
-            .select('id, name, admin_user_id')
-            .eq('admin_user_id', authData.user.id)
-            .single()
+          // Check manual schools
+          console.log('Checking manual schools...')
+          const { data: manualSchoolData, error: manualError } = await supabase
+            .from('directory_manual_schools')
+            .select('id, school_name')
+            .eq('status', 'approved')
+            .contains('contact_info', { email })
+            .maybeSingle()
 
-          if (!schoolError && schoolData) {
-            // This is a school admin - give them limited directory access
+          console.log('Manual school check result:', { manualSchoolData, manualError })
+
+          if (!manualError && manualSchoolData) {
+            // This is a manual school admin
             adminUser = {
               id: authData.user.id,
               email: email,
-              name: `${schoolData.name} Admin`,
-              admin_level: 99, // Special level for school admins
+              name: `${manualSchoolData.school_name} Admin`,
+              admin_level: 99,
               permissions: getDefaultPermissions(99),
-              school_id: schoolData.id,
+              school_id: manualSchoolData.id,
               last_login: new Date().toISOString(),
               isAuthenticated: true
             }
-          } else {
-            // Check manual schools
-            const { data: manualSchoolData, error: manualError } = await supabase
-              .from('directory_manual_schools')
-              .select('id, school_name')
-              .eq('status', 'approved')
-              .contains('contact_info', { email })
-              .single()
-
-            if (!manualError && manualSchoolData) {
-              // This is a manual school admin
-              adminUser = {
-                id: authData.user.id,
-                email: email,
-                name: `${manualSchoolData.school_name} Admin`,
-                admin_level: 99,
-                permissions: getDefaultPermissions(99),
-                school_id: manualSchoolData.id,
-                last_login: new Date().toISOString(),
-                isAuthenticated: true
-              }
-            }
           }
-        }
-
-        if (!adminUser) {
-          // User is not an admin
-          await supabase.auth.signOut()
-          return false
         }
       }
 
       if (!adminUser) {
+        // User is authenticated but not an admin
+        console.log('User authenticated but not found in any admin tables')
+        await supabase.auth.signOut()
         return false
       }
 

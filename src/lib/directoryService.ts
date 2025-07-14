@@ -295,6 +295,58 @@ export const recordAdImpression = async (adId: string): Promise<void> => {
   }
 }
 
+// Get manual school submissions for admin review
+export const getManualSchoolSubmissions = async (status?: 'pending' | 'approved' | 'rejected'): Promise<DirectoryManualSchool[]> => {
+  try {
+    let query = supabase
+      .from('directory_manual_schools')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (status) {
+      query = query.eq('status', status)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('Database error fetching school submissions:', error)
+      throw error
+    }
+    
+    return data || []
+  } catch (error) {
+    console.error('Error fetching manual school submissions:', error)
+    return []
+  }
+}
+
+// Update school submission status (admin review)
+export const updateSchoolSubmissionStatus = async (
+  submissionId: string, 
+  status: 'approved' | 'rejected', 
+  adminNotes: string,
+  reviewerId: string
+): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('directory_manual_schools')
+      .update({
+        status,
+        admin_notes: adminNotes,
+        reviewed_by: reviewerId,
+        reviewed_at: new Date().toISOString()
+      })
+      .eq('id', submissionId)
+
+    if (error) throw error
+    return true
+  } catch (error) {
+    console.error('Error updating school submission status:', error)
+    return false
+  }
+}
+
 // Generate session ID for visitor tracking
 export const generateSessionId = (): string => {
   return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`

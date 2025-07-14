@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { School, CheckCircle, XCircle, Clock, Eye, ExternalLink, FileText, MapPin, Calendar, User } from 'lucide-react'
 import type { DirectoryManualSchool } from '../../types/database'
+import { getManualSchoolSubmissions, updateSchoolSubmissionStatus } from '../../lib/directoryService'
+import { useAdminAuth } from '../../contexts/AdminAuthContext'
 
 const SchoolSubmissionReview: React.FC = () => {
   const [submissions, setSubmissions] = useState<DirectoryManualSchool[]>([])
@@ -9,6 +11,7 @@ const SchoolSubmissionReview: React.FC = () => {
   const [reviewAction, setReviewAction] = useState<'approve' | 'reject' | null>(null)
   const [adminNotes, setAdminNotes] = useState('')
   const [processing, setProcessing] = useState(false)
+  const { admin } = useAdminAuth()
 
   useEffect(() => {
     fetchSubmissions()
@@ -17,104 +20,11 @@ const SchoolSubmissionReview: React.FC = () => {
   const fetchSubmissions = async () => {
     setLoading(true)
     try {
-      // Mock data for demonstration - in production, fetch from Supabase
-      const mockSubmissions: DirectoryManualSchool[] = [
-        {
-          id: '1',
-          created_at: '2025-01-10T09:00:00Z',
-          updated_at: '2025-01-10T09:00:00Z',
-          school_name: 'Saint Teresa Catholic School',
-          logo_url: 'https://via.placeholder.com/100x100/3B82F6/FFFFFF?text=STC',
-          description: 'A premier Catholic institution providing quality education from kindergarten through high school with emphasis on moral values and academic excellence.',
-          school_type: 'private',
-          year_established: 1995,
-          location: 'New Kru Town, Montserrado County',
-          website_url: 'https://stteresa.edu.lr',
-          permit_url: 'https://example.com/permits/st-teresa-permit.pdf',
-          contact_info: {
-            email: 'info@stteresa.edu.lr',
-            phone: '+231770123456',
-            address: '123 Unity Street, New Kru Town, Monrovia'
-          },
-          categories: ['kindergarten', 'elementary', 'junior_high', 'senior_high'],
-          status: 'pending',
-          reviewed_by: undefined,
-          reviewed_at: undefined,
-          admin_notes: undefined
-        },
-        {
-          id: '2',
-          created_at: '2025-01-11T14:30:00Z',
-          updated_at: '2025-01-11T14:30:00Z',
-          school_name: 'Liberia Technical Institute',
-          logo_url: 'https://via.placeholder.com/100x100/059669/FFFFFF?text=LTI',
-          description: 'Leading technical and vocational training institute offering programs in engineering, automotive, and computer technology.',
-          school_type: 'public',
-          year_established: 2008,
-          location: 'Paynesville, Montserrado County',
-          website_url: 'https://lti.gov.lr',
-          permit_url: 'https://example.com/permits/lti-permit.pdf',
-          contact_info: {
-            email: 'admissions@lti.gov.lr',
-            phone: '+231555987654',
-            address: 'Tech City Campus, Paynesville'
-          },
-          categories: ['vocational', 'technical'],
-          status: 'pending',
-          reviewed_by: undefined,
-          reviewed_at: undefined,
-          admin_notes: undefined
-        },
-        {
-          id: '3',
-          created_at: '2025-01-09T11:20:00Z',
-          updated_at: '2025-01-12T16:45:00Z',
-          school_name: 'Bong County Community College',
-          logo_url: 'https://via.placeholder.com/100x100/7C3AED/FFFFFF?text=BCCC',
-          description: 'Community college serving Bong County with programs in agriculture, business administration, and teacher education.',
-          school_type: 'public',
-          year_established: 2012,
-          location: 'Gbarnga, Bong County',
-          website_url: 'https://bccc.edu.lr',
-          permit_url: 'https://example.com/permits/bccc-permit.pdf',
-          contact_info: {
-            email: 'registrar@bccc.edu.lr',
-            phone: '+231888555333',
-            address: 'College Road, Gbarnga'
-          },
-          categories: ['college'],
-          status: 'approved',
-          reviewed_by: 'admin_user_1',
-          reviewed_at: '2025-01-12T16:45:00Z',
-          admin_notes: 'All documentation verified. Good standing with Ministry of Education.'
-        },
-        {
-          id: '4',
-          created_at: '2025-01-08T13:15:00Z',
-          updated_at: '2025-01-11T10:30:00Z',
-          school_name: 'Future Leaders Academy',
-          logo_url: 'https://via.placeholder.com/100x100/DC2626/FFFFFF?text=FLA',
-          description: 'Private academy focusing on STEM education and leadership development for students aged 5-18.',
-          school_type: 'private',
-          year_established: 2020,
-          location: 'Sinkor, Montserrado County',
-          website_url: 'https://futureleaders.com.lr',
-          permit_url: 'https://example.com/permits/fla-permit.pdf',
-          contact_info: {
-            email: 'contact@futureleaders.com.lr',
-            phone: '+231777444222'
-          },
-          categories: ['kindergarten', 'elementary', 'junior_high', 'senior_high'],
-          status: 'rejected',
-          reviewed_by: 'admin_user_2',
-          reviewed_at: '2025-01-11T10:30:00Z',
-          admin_notes: 'Incomplete documentation. Operating permit expired. Requested to resubmit with current permit.'
-        }
-      ]
-
-      setSubmissions(mockSubmissions)
+      const data = await getManualSchoolSubmissions()
+      setSubmissions(data)
     } catch (error) {
       console.error('Failed to fetch submissions:', error)
+      setSubmissions([])
     } finally {
       setLoading(false)
     }
@@ -123,16 +33,17 @@ const SchoolSubmissionReview: React.FC = () => {
   const handleReview = async (submission: DirectoryManualSchool, action: 'approve' | 'reject', notes: string) => {
     setProcessing(true)
     try {
-      // In production, update submission status in Supabase
-      // await supabase
-      //   .from('directory_manual_schools')
-      //   .update({
-      //     status: action === 'approve' ? 'approved' : 'rejected',
-      //     reviewed_by: 'current_admin_id',
-      //     reviewed_at: new Date().toISOString(),
-      //     admin_notes: notes
-      //   })
-      //   .eq('id', submission.id)
+      // Update submission status in database
+      const success = await updateSchoolSubmissionStatus(
+        submission.id,
+        action === 'approve' ? 'approved' : 'rejected',
+        notes,
+        admin?.id || 'unknown_admin'
+      )
+
+      if (!success) {
+        throw new Error('Failed to update submission status')
+      }
 
       // Update local state
       setSubmissions(prev => prev.map(s => 
@@ -140,7 +51,7 @@ const SchoolSubmissionReview: React.FC = () => {
           ? {
               ...s,
               status: action === 'approve' ? 'approved' : 'rejected',
-              reviewed_by: 'current_admin',
+              reviewed_by: admin?.id || 'unknown_admin',
               reviewed_at: new Date().toISOString(),
               admin_notes: notes
             }
@@ -151,6 +62,9 @@ const SchoolSubmissionReview: React.FC = () => {
       setSelectedSubmission(null)
       setReviewAction(null)
       setAdminNotes('')
+
+      // Refresh submissions list
+      await fetchSubmissions()
 
       alert(`School ${action === 'approve' ? 'approved' : 'rejected'} successfully!`)
     } catch (error) {
@@ -196,6 +110,18 @@ const SchoolSubmissionReview: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (submissions.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <School className="mx-auto h-12 w-12 text-gray-400" />
+        <h3 className="mt-2 text-sm font-medium text-gray-900">No school submissions</h3>
+        <p className="mt-1 text-sm text-gray-500">
+          There are currently no school submissions to review.
+        </p>
       </div>
     )
   }
@@ -296,6 +222,22 @@ const SchoolSubmissionReview: React.FC = () => {
                           <span className="text-gray-600">{submission.categories.length} programs</span>
                         </div>
                       </div>
+
+                      {/* Contact Info */}
+                      {submission.contact_info && (
+                        <div className="mt-3 text-xs text-gray-500">
+                          {typeof submission.contact_info === 'object' && submission.contact_info !== null && (
+                            <>
+                              {(submission.contact_info as any).email && (
+                                <div>Email: {(submission.contact_info as any).email}</div>
+                              )}
+                              {(submission.contact_info as any).phone && (
+                                <div>Phone: {(submission.contact_info as any).phone}</div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
 
                       <div className="flex items-center space-x-4 mt-4">
                         {submission.website_url && (

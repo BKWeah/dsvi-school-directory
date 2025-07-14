@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Shield, Users, School, Megaphone, BarChart, Settings, LogOut, User } from 'lucide-react'
+import { Shield, Users, School, Megaphone, BarChart, Settings, LogOut, User, DollarSign } from 'lucide-react'
 import { AdminAuthProvider, useAdminAuth, ADMIN_PERMISSIONS } from '../contexts/AdminAuthContext'
 import ProtectedAdminRoute, { 
   VisitorManagementRoute, 
@@ -222,7 +222,7 @@ const DirectoryAdminContent: React.FC = () => {
                     <BarChart className="h-8 w-8 text-green-600" />
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                      <p className="text-2xl font-bold text-gray-900">₦{quickStats.totalRevenue.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-gray-900">${quickStats.totalRevenue.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
@@ -232,7 +232,7 @@ const DirectoryAdminContent: React.FC = () => {
                     <DollarSign className="h-8 w-8 text-emerald-600" />
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">This Month</p>
-                      <p className="text-2xl font-bold text-gray-900">₦{quickStats.monthlyRevenue.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-gray-900">${quickStats.monthlyRevenue.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
