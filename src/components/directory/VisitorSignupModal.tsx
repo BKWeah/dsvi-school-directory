@@ -8,9 +8,10 @@ interface VisitorSignupModalProps {
   isOpen: boolean
   onClose: () => void
   sessionId: string
+  onSignupComplete?: () => void // Callback when signup is successfully completed
 }
 
-const VisitorSignupModal: React.FC<VisitorSignupModalProps> = ({ isOpen, onClose, sessionId }) => {
+const VisitorSignupModal: React.FC<VisitorSignupModalProps> = ({ isOpen, onClose, sessionId, onSignupComplete }) => {
   const [formData, setFormData] = useState<VisitorSignupForm>({
     first_name: '',
     email_or_whatsapp: '',
@@ -21,6 +22,24 @@ const VisitorSignupModal: React.FC<VisitorSignupModalProps> = ({ isOpen, onClose
   })
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  // Prevent ESC key from closing modal during form phase
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !submitted) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    }
+
+    if (isOpen && !submitted) {
+      document.addEventListener('keydown', handleKeyDown)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, submitted])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,6 +57,8 @@ const VisitorSignupModal: React.FC<VisitorSignupModalProps> = ({ isOpen, onClose
     
     if (success) {
       setSubmitted(true)
+      // Notify parent component that signup was completed
+      onSignupComplete?.()
     }
     
     setLoading(false)
@@ -87,14 +108,15 @@ const VisitorSignupModal: React.FC<VisitorSignupModalProps> = ({ isOpen, onClose
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          <X className="h-6 w-6" />
-        </button>
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={(e) => e.stopPropagation()} // Prevent backdrop click from closing modal
+    >
+      <div 
+        className="bg-white rounded-lg max-w-md w-full p-6 relative"
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from bubbling
+      >
+        {/* X button removed - modal is mandatory during form phase */}
         
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Get Instant Access</h2>

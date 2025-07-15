@@ -16,10 +16,65 @@ const DirectoryHome: React.FC = () => {
   const [filters, setFilters] = useState<DirectoryFilters>({})
   const [searchTerm, setSearchTerm] = useState('')
   const [showVisitorModal, setShowVisitorModal] = useState(false)
+  const [hasDirectoryAccess, setHasDirectoryAccess] = useState(false)
+  const [accessCheckComplete, setAccessCheckComplete] = useState(false)
   const [sessionId] = useState(() => generateSessionId())
 
-  // Show visitor modal after 10 seconds or on first scroll
+  // Handle successful visitor signup completion
+  const handleSignupComplete = () => {
+    try {
+      // Set localStorage flag to remember completion across sessions
+      localStorage.setItem('dsvi_visitor_signup_completed', 'true')
+      // Optional: store completion timestamp for analytics or cleanup
+      localStorage.setItem('dsvi_visitor_signup_timestamp', new Date().toISOString())
+      console.log('Visitor signup completion saved to localStorage')
+    } catch (error) {
+      // localStorage might be disabled or full
+      console.warn('Could not save signup completion to localStorage:', error)
+      // Could implement fallback like session storage or just continue
+    }
+    
+    // Grant directory access immediately after successful signup
+    setHasDirectoryAccess(true)
+  }
+
+  // Utility function for testing/debugging - can be called from browser console
+  // Usage: window.clearDSVISignup()
+  React.useEffect(() => {
+    (window as any).clearDSVISignup = () => {
+      try {
+        localStorage.removeItem('dsvi_visitor_signup_completed')
+        localStorage.removeItem('dsvi_visitor_signup_timestamp')
+        setHasDirectoryAccess(false)
+        setAccessCheckComplete(false)
+        console.log('DSVI visitor signup localStorage cleared - refresh page to see access gate again')
+      } catch (error) {
+        console.warn('Could not clear localStorage:', error)
+      }
+    }
+  }, [])
+
+  // Check access status and show visitor modal if needed
   useEffect(() => {
+    // Check if user has already completed the visitor signup
+    try {
+      const hasCompletedSignup = localStorage.getItem('dsvi_visitor_signup_completed')
+      
+      if (hasCompletedSignup === 'true') {
+        // User already completed signup, grant access and don't show modal
+        console.log('Visitor signup already completed, granting directory access')
+        setHasDirectoryAccess(true)
+        setAccessCheckComplete(true)
+        return
+      }
+    } catch (error) {
+      // localStorage might be disabled in some browsers/modes
+      console.warn('Could not access localStorage, showing modal anyway:', error)
+    }
+
+    // User hasn't completed signup, access check is complete but no access granted
+    setAccessCheckComplete(true)
+
     const timer = setTimeout(() => {
       setShowVisitorModal(true)
     }, 10000)
@@ -63,6 +118,84 @@ const DirectoryHome: React.FC = () => {
     setFilters(newFilters)
   }
 
+  // Show loading state while checking access
+  if (!accessCheckComplete) {
+    return (
+      <>
+        <Helmet>
+          <title>DSVI School Directory - Loading...</title>
+          <meta name="description" content="Loading the DSVI School Directory..." />
+        </Helmet>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading Directory...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  // Show access gate if user doesn't have directory access
+  if (!hasDirectoryAccess) {
+    return (
+      <>
+        <Helmet>
+          <title>DSVI School Directory - Get Access</title>
+          <meta name="description" content="Get instant access to Liberia's comprehensive school directory" />
+        </Helmet>
+        <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
+          <div className="text-center text-white max-w-2xl">
+            <School className="h-20 w-20 mx-auto mb-6 text-blue-200" />
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              DSVI School Directory
+            </h1>
+            <p className="text-xl mb-8 text-blue-100">
+              Liberia's Central Hub for Verified Schools
+            </p>
+            <p className="text-lg mb-8 text-blue-100">
+              Join thousands of parents, educators, and students exploring verified Liberian schools. 
+              Complete a quick signup to get instant access to our comprehensive directory.
+            </p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8">
+              <div className="grid md:grid-cols-3 gap-6 text-center">
+                <div>
+                  <School className="h-8 w-8 mx-auto mb-2 text-blue-200" />
+                  <h3 className="font-semibold mb-1">Verified Schools</h3>
+                  <p className="text-sm text-blue-100">All schools are verified and regularly updated</p>
+                </div>
+                <div>
+                  <Users className="h-8 w-8 mx-auto mb-2 text-blue-200" />
+                  <h3 className="font-semibold mb-1">Trusted Community</h3>
+                  <p className="text-sm text-blue-100">Join parents and educators across Liberia</p>
+                </div>
+                <div>
+                  <MapPin className="h-8 w-8 mx-auto mb-2 text-blue-200" />
+                  <h3 className="font-semibold mb-1">Find Schools Near You</h3>
+                  <p className="text-sm text-blue-100">Search by location, type, and programs</p>
+                </div>
+              </div>
+            </div>
+            {!showVisitorModal && (
+              <div className="text-blue-200 text-lg">
+                Your access form will appear shortly...
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Visitor Signup Modal - Mandatory for access */}
+        <VisitorSignupModal
+          isOpen={showVisitorModal}
+          onClose={() => setShowVisitorModal(false)}
+          sessionId={sessionId}
+          onSignupComplete={handleSignupComplete}
+        />
+      </>
+    )
+  }
+
+  // Show full directory if user has access
   return (
     <>
       <Helmet>
@@ -278,13 +411,6 @@ const DirectoryHome: React.FC = () => {
           </div>
         </footer>
       </div>
-
-      {/* Visitor Signup Modal */}
-      <VisitorSignupModal
-        isOpen={showVisitorModal}
-        onClose={() => setShowVisitorModal(false)}
-        sessionId={sessionId}
-      />
     </>
   )
 }
