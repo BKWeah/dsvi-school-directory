@@ -72,7 +72,8 @@ const DirectoryHome: React.FC = () => {
       console.warn('Could not access localStorage, showing modal anyway:', error)
     }
 
-    // User hasn't completed signup, access check is complete but no access granted
+    // User hasn't completed signup, no access granted but show directory with overlay
+    setHasDirectoryAccess(false)
     setAccessCheckComplete(true)
 
     const timer = setTimeout(() => {
@@ -118,84 +119,6 @@ const DirectoryHome: React.FC = () => {
     setFilters(newFilters)
   }
 
-  // Show loading state while checking access
-  if (!accessCheckComplete) {
-    return (
-      <>
-        <Helmet>
-          <title>DSVI School Directory - Loading...</title>
-          <meta name="description" content="Loading the DSVI School Directory..." />
-        </Helmet>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading Directory...</p>
-          </div>
-        </div>
-      </>
-    )
-  }
-
-  // Show access gate if user doesn't have directory access
-  if (!hasDirectoryAccess) {
-    return (
-      <>
-        <Helmet>
-          <title>DSVI School Directory - Get Access</title>
-          <meta name="description" content="Get instant access to Liberia's comprehensive school directory" />
-        </Helmet>
-        <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-          <div className="text-center text-white max-w-2xl">
-            <School className="h-20 w-20 mx-auto mb-6 text-blue-200" />
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              DSVI School Directory
-            </h1>
-            <p className="text-xl mb-8 text-blue-100">
-              Liberia's Central Hub for Verified Schools
-            </p>
-            <p className="text-lg mb-8 text-blue-100">
-              Join thousands of parents, educators, and students exploring verified Liberian schools. 
-              Complete a quick signup to get instant access to our comprehensive directory.
-            </p>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8">
-              <div className="grid md:grid-cols-3 gap-6 text-center">
-                <div>
-                  <School className="h-8 w-8 mx-auto mb-2 text-blue-200" />
-                  <h3 className="font-semibold mb-1">Verified Schools</h3>
-                  <p className="text-sm text-blue-100">All schools are verified and regularly updated</p>
-                </div>
-                <div>
-                  <Users className="h-8 w-8 mx-auto mb-2 text-blue-200" />
-                  <h3 className="font-semibold mb-1">Trusted Community</h3>
-                  <p className="text-sm text-blue-100">Join parents and educators across Liberia</p>
-                </div>
-                <div>
-                  <MapPin className="h-8 w-8 mx-auto mb-2 text-blue-200" />
-                  <h3 className="font-semibold mb-1">Find Schools Near You</h3>
-                  <p className="text-sm text-blue-100">Search by location, type, and programs</p>
-                </div>
-              </div>
-            </div>
-            {!showVisitorModal && (
-              <div className="text-blue-200 text-lg">
-                Your access form will appear shortly...
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {/* Visitor Signup Modal - Mandatory for access */}
-        <VisitorSignupModal
-          isOpen={showVisitorModal}
-          onClose={() => setShowVisitorModal(false)}
-          sessionId={sessionId}
-          onSignupComplete={handleSignupComplete}
-        />
-      </>
-    )
-  }
-
-  // Show full directory if user has access
   return (
     <>
       <Helmet>
@@ -203,7 +126,7 @@ const DirectoryHome: React.FC = () => {
         <meta name="description" content="The DSVI School Directory is a trusted, public-facing directory that connects parents, educators, students, and partners with verified Liberian schools at every educational level." />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className={`min-h-screen bg-gray-50 relative ${!hasDirectoryAccess ? 'pointer-events-none select-none' : ''}`}>
         {/* Header */}
         <header className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -411,6 +334,27 @@ const DirectoryHome: React.FC = () => {
           </div>
         </footer>
       </div>
+
+      {/* Overlay to disable interaction when user doesn't have access */}
+      {!hasDirectoryAccess && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 pointer-events-auto">
+          <div className="absolute inset-0 cursor-not-allowed"></div>
+          {/* Show message only when modal is not visible */}
+          {!showVisitorModal && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-lg">
+              Complete the signup form to access the directory
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Visitor Signup Modal - Mandatory for access */}
+      <VisitorSignupModal
+        isOpen={showVisitorModal}
+        onClose={() => setShowVisitorModal(false)}
+        sessionId={sessionId}
+        onSignupComplete={handleSignupComplete}
+      />
     </>
   )
 }

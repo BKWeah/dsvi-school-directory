@@ -29,14 +29,26 @@ const AudienceSelector: React.FC<AudienceSelectorProps> = ({
   onDurationChange,
   onTargetAudienceChange
 }) => {
-  const reachOptions = [
-    { value: 100, label: '100 viewers', tier: 'Starter' },
-    { value: 250, label: '250 viewers', tier: 'Basic' },
-    { value: 500, label: '500 viewers', tier: 'Standard' },
-    { value: 1000, label: '1,000 viewers', tier: 'Premium' },
-    { value: 2500, label: '2,500 viewers', tier: 'Professional' },
-    { value: 5000, label: '5,000+ viewers', tier: 'Enterprise' }
+  const reachPresets = [
+    { value: 100, label: '100', tier: 'Starter' },
+    { value: 250, label: '250', tier: 'Basic' },
+    { value: 500, label: '500', tier: 'Standard' },
+    { value: 1000, label: '1K', tier: 'Premium' },
+    { value: 2500, label: '2.5K', tier: 'Professional' },
+    { value: 5000, label: '5K', tier: 'Enterprise' },
+    { value: 10000, label: '10K', tier: 'Elite' }
   ]
+
+  const getTierInfo = (reach: number): { tier: string; description: string } => {
+    if (reach <= 100) return { tier: 'Starter', description: 'Local visibility' }
+    if (reach <= 250) return { tier: 'Basic', description: 'Neighborhood reach' }
+    if (reach <= 500) return { tier: 'Standard', description: 'Community focus' }
+    if (reach <= 1000) return { tier: 'Premium', description: 'Regional presence' }
+    if (reach <= 2500) return { tier: 'Professional', description: 'County-wide reach' }
+    if (reach <= 5000) return { tier: 'Enterprise', description: 'Multi-county reach' }
+    if (reach <= 10000) return { tier: 'Elite', description: 'National visibility' }
+    return { tier: 'Custom', description: 'Maximum exposure' }
+  }
 
   const durationPresets = [
     { days: 1, label: '1 Day' },
@@ -93,22 +105,56 @@ const AudienceSelector: React.FC<AudienceSelectorProps> = ({
           <Users className="w-4 h-4 inline mr-2" />
           Reach Size
         </label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {reachOptions.map((option) => (
+        
+        {/* Custom Reach Input */}
+        <div className="mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="flex-1">
+              <input
+                type="number"
+                min="1"
+                max="100000"
+                value={reachCount}
+                onChange={(e) => onReachChange(parseInt(e.target.value) || 1)}
+                placeholder="Enter target reach"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium"
+              />
+            </div>
+            <div className="text-sm text-gray-600">
+              <div className="font-medium text-blue-600">{getTierInfo(reachCount).tier}</div>
+              <div className="text-xs">{getTierInfo(reachCount).description}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Preset Options */}
+        <div className="mb-2">
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Quick Presets:</span>
+        </div>
+        <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
+          {reachPresets.map((preset) => (
             <button
-              key={option.value}
+              key={preset.value}
               type="button"
-              onClick={() => onReachChange(option.value)}
-              className={`p-3 rounded-lg border text-left transition-colors ${
-                reachCount === option.value
+              onClick={() => onReachChange(preset.value)}
+              className={`p-2 rounded-md border text-center transition-colors ${
+                reachCount === preset.value
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 hover:border-gray-300 text-gray-700'
               }`}
             >
-              <div className="font-medium">{option.label}</div>
-              <div className="text-xs text-gray-500">{option.tier}</div>
+              <div className="text-sm font-medium">{preset.label}</div>
+              <div className="text-xs text-gray-500">{preset.tier}</div>
             </button>
           ))}
+        </div>
+        
+        {/* Reach Guidelines */}
+        <div className="mt-3 p-3 bg-gray-50 rounded-md">
+          <div className="text-xs text-gray-600">
+            <strong>Reach Guidelines:</strong> Start with 100-500 for local campaigns, 1K-2.5K for county-wide reach, 
+            5K+ for regional presence. Higher reach increases visibility but also cost.
+          </div>
         </div>
       </div>
 

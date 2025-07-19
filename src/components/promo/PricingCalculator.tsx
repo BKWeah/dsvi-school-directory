@@ -19,18 +19,10 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
   targetAudience,
   onPriceCalculated
 }) => {
-  // Enhanced pricing logic
+  // Enhanced pricing logic with dynamic reach calculation
   const calculatePrice = (): number => {
     // Base pricing structure
     const basePricing = {
-      reach: {
-        100: 10.00,   // $10 for 100 views
-        250: 22.50,   // $22.50 for 250 views  
-        500: 40.00,   // $40 for 500 views
-        1000: 70.00,  // $70 for 1000 views
-        2500: 150.00, // $150 for 2500 views
-        5000: 275.00  // $275 for 5000 views
-      },
       duration: {
         daily: 2.00,   // $2 per day
         weekly: 12.00  // $12 per week (discount)
@@ -43,21 +35,51 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
       }
     }
 
-    // Calculate base reach price
-    let reachPrice = 0
-    if (reachCount <= 100) {
-      reachPrice = basePricing.reach[100]
-    } else if (reachCount <= 250) {
-      reachPrice = basePricing.reach[250]
-    } else if (reachCount <= 500) {
-      reachPrice = basePricing.reach[500]
-    } else if (reachCount <= 1000) {
-      reachPrice = basePricing.reach[1000]
-    } else if (reachCount <= 2500) {
-      reachPrice = basePricing.reach[2500]
-    } else {
-      reachPrice = basePricing.reach[5000]
+    // Dynamic reach pricing formula
+    // Base cost per view decreases as reach increases (economies of scale)
+    const calculateReachPrice = (reach: number): number => {
+      if (reach <= 0) return 0
+      
+      // Tiered pricing with diminishing cost per view
+      let totalPrice = 0
+      let remainingReach = reach
+      
+      // Tier 1: First 100 views at $0.10 per view
+      const tier1 = Math.min(remainingReach, 100)
+      totalPrice += tier1 * 0.10
+      remainingReach -= tier1
+      
+      if (remainingReach > 0) {
+        // Tier 2: Next 400 views (101-500) at $0.08 per view
+        const tier2 = Math.min(remainingReach, 400)
+        totalPrice += tier2 * 0.08
+        remainingReach -= tier2
+      }
+      
+      if (remainingReach > 0) {
+        // Tier 3: Next 1500 views (501-2000) at $0.06 per view
+        const tier3 = Math.min(remainingReach, 1500)
+        totalPrice += tier3 * 0.06
+        remainingReach -= tier3
+      }
+      
+      if (remainingReach > 0) {
+        // Tier 4: Next 3000 views (2001-5000) at $0.05 per view
+        const tier4 = Math.min(remainingReach, 3000)
+        totalPrice += tier4 * 0.05
+        remainingReach -= tier4
+      }
+      
+      if (remainingReach > 0) {
+        // Tier 5: Remaining views at $0.04 per view
+        totalPrice += remainingReach * 0.04
+      }
+      
+      return totalPrice
     }
+
+    // Calculate base reach price
+    const reachPrice = calculateReachPrice(reachCount)
 
     // Calculate duration price
     const weeks = Math.floor(durationDays / 7)
@@ -105,7 +127,9 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
     if (reach <= 500) return 'Standard'
     if (reach <= 1000) return 'Premium'
     if (reach <= 2500) return 'Professional'
-    return 'Enterprise'
+    if (reach <= 5000) return 'Enterprise'
+    if (reach <= 10000) return 'Elite'
+    return 'Custom'
   }
 
   return (
