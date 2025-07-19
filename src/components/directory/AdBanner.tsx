@@ -129,7 +129,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ className = '' }) => {
 
       {/* Disclaimer */}
       <div className="mt-3 text-xs text-gray-500">
-        This is a sponsored listing. DSVI School Directory earns revenue from these placements to support our platform.
+        This is a sponsored listing. GyaWe School Directory earns revenue from these placements to support our platform.
       </div>
     </div>
   )

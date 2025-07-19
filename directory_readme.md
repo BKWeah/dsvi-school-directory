@@ -1,10 +1,10 @@
 
 
-DSVI School Directory Platform - User Flow & Visitor Journey
+GyaWe School Directory Platform - User Flow & Visitor Journey
 OBJECTIVE:
 To deliver a centralized digital directory that helps users discover verified Liberian schools and allows schools to boost visibility through targeted in-directory promotions.
 PAGE 1: Visitor Signup Modal (Lead Capture)
-Purpose: Collect minimal visitor information in exchange for full access to the DSVI Directory, enabling personalized ad reach for listed schools.
+Purpose: Collect minimal visitor information in exchange for full access to the GyaWe Directory, enabling personalized ad reach for listed schools.
 Trigger Behavior:
 • Displayed once per session
 • Appears as a gated popup after 10 seconds or on first scroll
@@ -21,10 +21,10 @@ Post-Submission Actions:
 • Stores visitor data in the “Registered Visitors” dashboard
 • Enables future personalized, non-intrusive promotional targeting
 • Displays consent policy with data use transparency
-PAGE 2: DSVI School Directory – Main Platform
+PAGE 2: GyaWe School Directory – Main Platform
 Header Title: “Liberia’s Central Hub for Verified Schools”
 Intro Paragraph:
-The DSVI School Directory is a trusted, public-facing directory that connects parents, educators, students, and partners with verified Liberian schools at every educational level. 
+The GyaWe School Directory is a trusted, public-facing directory that connects parents, educators, students, and partners with verified Liberian schools at every educational level. 
 Whether you're seeking early childhood centers, high schools, or universities, this platform helps you search, compare, and connect, instantly and confidently.
 
 Why Use the Directory?
@@ -68,11 +68,11 @@ Subcategories:
 • The Permit to Operate or Accreditation Certificate is submitted during onboarding and displayed in the directory
 📈 Ongoing Visibility Benefits
 All listed schools enjoy:
-• The DSVI Directory of Schools will be featured on our official website
+• The GyaWe Directory of Schools will be featured on our official website
 • Regular social media promotions
 • Enhanced search engine optimization (SEO)
 • Referral traffic from DSVI’s campaigns and media partners
-🚀 PAGE 3: “DSVI Promo Boost Console” – School Ad Tool
+🚀 PAGE 3: "GyaWe Promo Boost Console" – School Ad Tool
 Purpose: Empower listed schools to promote themselves via in-directory scroll ads targeted to registered users.
 💡 How It Works (School Journey)
 1. Access the Promo Console

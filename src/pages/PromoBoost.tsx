@@ -131,8 +131,8 @@ const PromoBoostContent: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>DSVI Promo Boost Console - Promote Your School</title>
-        <meta name="description" content="Create targeted promotional campaigns for your school in the DSVI Directory. Reach parents, students, and educators across Liberia." />
+        <title>GyaWe School Directory Promo Boost Console - Promote Your School</title>
+        <meta name="description" content="Create targeted promotional campaigns for your school in the GyaWe School Directory. Reach parents, students, and educators across Liberia." />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50">
@@ -143,7 +143,7 @@ const PromoBoostContent: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <School className="h-8 w-8 text-blue-600" />
                 <div>
-                  <span className="text-xl font-bold text-gray-900">DSVI Promo Boost</span>
+                  <span className="text-xl font-bold text-gray-900">GyaWe School Directory Promo Boost</span>
                   <div className="text-sm text-gray-500">{user?.school.name}</div>
                 </div>
               </div>

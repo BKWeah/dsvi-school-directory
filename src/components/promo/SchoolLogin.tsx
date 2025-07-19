@@ -61,7 +61,7 @@ const SchoolLogin: React.FC<SchoolLoginProps> = ({ onLoginSuccess }) => {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <School className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">DSVI Promo Boost</h1>
+            <h1 className="text-2xl font-bold text-gray-900">GyaWe School Directory Promo Boost</h1>
           </div>
           <p className="text-gray-600">Sign in to create and manage your school's promotional campaigns</p>
         </div>
@@ -212,7 +212,7 @@ const SchoolLogin: React.FC<SchoolLoginProps> = ({ onLoginSuccess }) => {
             <div className="text-center text-sm text-gray-600">
               <h3 className="font-medium mb-2">Access Methods:</h3>
               <ul className="space-y-1 text-xs">
-                <li><strong>Email Login:</strong> For DSVI-built school websites</li>
+                <li><strong>Email Login:</strong> For GyaWe School Solutions (GSS)-built school websites</li>
                 <li><strong>School Code:</strong> For manually registered schools</li>
               </ul>
             </div>

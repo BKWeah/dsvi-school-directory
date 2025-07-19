@@ -62,11 +62,11 @@ const SchoolGrid: React.FC<SchoolGridProps> = ({ schools, loading }) => {
               {school.name}
             </h3>
 
-            {/* DSVI Client Badge */}
+            {/* GSS Client Badge */}
             {school.is_dsvi_client && (
               <div className="flex justify-center mb-3">
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  DSVI Built
+                  GSS Built
                 </span>
               </div>
             )}

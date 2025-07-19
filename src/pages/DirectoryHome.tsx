@@ -122,8 +122,8 @@ const DirectoryHome: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>DSVI School Directory - Liberia's Central Hub for Verified Schools</title>
-        <meta name="description" content="The DSVI School Directory is a trusted, public-facing directory that connects parents, educators, students, and partners with verified Liberian schools at every educational level." />
+        <title>GyaWe School Directory - Liberia's Central Hub for Verified Schools</title>
+        <meta name="description" content="The GyaWe School Directory is a trusted, public-facing directory that connects parents, educators, students, and partners with verified Liberian schools at every educational level." />
       </Helmet>
 
       <div className={`min-h-screen bg-gray-50 relative ${!hasDirectoryAccess ? 'pointer-events-none select-none' : ''}`}>
@@ -133,7 +133,7 @@ const DirectoryHome: React.FC = () => {
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-2">
                 <School className="h-8 w-8 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">DSVI School Directory</span>
+                <span className="text-xl font-bold text-gray-900">GyaWe School Directory</span>
               </div>
               <nav className="hidden md:flex space-x-6">
                 <a href="#about" className="text-gray-600 hover:text-gray-900">About</a>
@@ -151,7 +151,7 @@ const DirectoryHome: React.FC = () => {
               Liberia's Central Hub for Verified Schools
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-blue-100">
-              The DSVI School Directory is a trusted, public-facing directory that connects parents, educators, students, and partners with verified Liberian schools at every educational level.
+              The GyaWe School Directory is a trusted, public-facing directory that connects parents, educators, students, and partners with verified Liberian schools at every educational level.
             </p>
             
             {/* Search Bar */}
@@ -185,8 +185,8 @@ const DirectoryHome: React.FC = () => {
                 <div className="bg-blue-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <GraduationCap className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">DSVI Built or Verified Website</h3>
-                <p className="text-gray-600 text-sm">Every school was either built by DSVI or has a verified, live website</p>
+                <h3 className="font-semibold text-gray-900 mb-2">GyaWe School Solutions (GSS) Built or Verified Website</h3>
+                <p className="text-gray-600 text-sm">Every school was either built by GyaWe School Solutions (GSS) or has a verified, live website</p>
               </div>
 
               <div className="text-center">
@@ -304,7 +304,7 @@ const DirectoryHome: React.FC = () => {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <School className="h-6 w-6" />
-                  <span className="text-lg font-bold">DSVI School Directory</span>
+                  <span className="text-lg font-bold">GyaWe School Directory</span>
                 </div>
                 <p className="text-gray-300">
                   Connecting parents, educators, students, and partners with verified Liberian schools.
@@ -329,7 +329,7 @@ const DirectoryHome: React.FC = () => {
             </div>
             
             <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-              <p>&copy; 2025 DSVI School Directory. All rights reserved.</p>
+              <p>&copy; 2025 GyaWe School Directory. All rights reserved.</p>
             </div>
           </div>
         </footer>

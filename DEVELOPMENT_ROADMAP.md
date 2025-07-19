@@ -1,4 +1,4 @@
-# DSVI School Directory - Development Roadmap
+# GyaWe School Directory - Development Roadmap
 
 ## 📊 Current Status Overview
 
@@ -516,4 +516,4 @@ VITE_SUPABASE_STORAGE_BUCKET=
 
 ---
 
-This roadmap provides a complete guide for implementing the remaining 35% of the DSVI School Directory platform to achieve 100% compliance with client requirements.
+This roadmap provides a complete guide for implementing the remaining 35% of the GyaWe School Directory platform to achieve 100% compliance with client requirements.

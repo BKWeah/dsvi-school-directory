@@ -117,7 +117,7 @@ const ManualSubmission: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Submit Your School</h1>
         <div className="bg-white rounded-lg shadow p-8">
           <p className="text-gray-600 mb-8">
-            Submit your school to be listed in the DSVI School Directory. All submissions will be reviewed before being published.
+            Submit your school to be listed in the GyaWe School Directory. All submissions will be reviewed before being published.
           </p>
           
           <form onSubmit={handleSubmit} className="space-y-8">

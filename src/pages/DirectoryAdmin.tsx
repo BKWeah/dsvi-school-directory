@@ -91,8 +91,8 @@ const DirectoryAdminContent: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Admin Panel - DSVI School Directory</title>
-        <meta name="description" content="Manage visitors, school submissions, and promotional campaigns for the DSVI School Directory." />
+        <title>Admin Panel - GyaWe School Directory</title>
+        <meta name="description" content="Manage visitors, school submissions, and promotional campaigns for the GyaWe School Directory." />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50">

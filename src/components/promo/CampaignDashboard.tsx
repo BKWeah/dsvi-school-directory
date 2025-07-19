@@ -163,8 +163,8 @@ const CampaignDashboard: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Campaign Dashboard - DSVI Promo Boost</title>
-        <meta name="description" content="Manage and track your school's promotional campaigns in the DSVI Directory." />
+        <title>Campaign Dashboard - GyaWe School Directory Promo Boost</title>
+        <meta name="description" content="Manage and track your school's promotional campaigns in the GyaWe School Directory." />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50">

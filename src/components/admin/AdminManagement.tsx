@@ -17,7 +17,7 @@ const AdminManagement: React.FC = () => {
   const [admins, setAdmins] = useState<AdminUser[]>([
     {
       id: '1',
-      name: 'DSVI Super Admin',
+      name: 'GyaWe School Directory Super Admin',
       email: 'admin@dsvi.com',
       admin_level: 1,
       permissions: ['manage_admins', 'manage_system', 'view_all_data'],
@@ -27,7 +27,7 @@ const AdminManagement: React.FC = () => {
     },
     {
       id: '2',
-      name: 'DSVI Director',
+      name: 'GyaWe School Directory Director',
       email: 'director@dsvi.com',
       admin_level: 1,
       permissions: ['manage_admins', 'manage_system', 'view_all_data'],

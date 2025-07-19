@@ -93,7 +93,7 @@ const VisitorSignupModal: React.FC<VisitorSignupModalProps> = ({ isOpen, onClose
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome!</h2>
             <p className="text-gray-600 mb-6">
-              Thank you for joining the DSVI School Directory. You now have full access to explore all listed schools.
+              Thank you for joining the GyaWe School Directory. You now have full access to explore all listed schools.
             </p>
             <button
               onClick={onClose}
